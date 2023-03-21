@@ -1,5 +1,9 @@
 const http = require('http');
-const fs = require('fs');
+
+const routes = require('./routes');
+
+const server = http.createServer(routes);
+server.listen(3000);
 
 // const server = http.createServer((request, response)=>{
 //    response.statusCode = 200;
@@ -36,44 +40,6 @@ const fs = require('fs');
 //   } 
 // });
 // server.listen(3000);
-
-const server = http.createServer((request,response)=>{
-    const  url  = request.url;
-    const method = request.method;
-    if(url === '/'){
-        return fs.readFile('message.txt', (err,data)=>{
-            data=data.toString();
-            console.log(data);
-            let text = data;
-            response.write('<html>');
-    response.write('<head><title>Enter Message</title><head>');
-    response.write('<body>')
-    response.write(`<h4>${text}</h4>`)
-    response.write('<form action="/message" method="POST"><input type="text" name="message"><button type="submit">send</button></form><body>');
-    response.write('<html>');
-    return response.end();
-        })
-    
-    }
-
-if (url === '/message' && method ==='POST'){
-    const body = [];
-    request.on('data', (chunk)=>{
-        console.log(chunk);  //normally to check the chunk data u can remove it if u want//
-        body.push(chunk);
-    });
-    return request.on('end', ()=>{
-         const paredBody = Buffer.concat(body).toString();  
-         const message = paredBody.split('=')[1];
-         fs.writeFile('message.txt', message, err=>{
-            response.statusCode = 302;
-            response.setHeader('Location', '/')
-            return response.end();
-         });
-    });   
-}
-});
-server.listen(3000);
 
 
 
